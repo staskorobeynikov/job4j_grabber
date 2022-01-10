@@ -4,20 +4,35 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.model.Post;
+import ru.job4j.utils.SqlRuDateTimeParser;
 
 import java.io.IOException;
 
 public class SqlRuParse {
+
+    private final SqlRuDateTimeParser parser = new SqlRuDateTimeParser();
+
+    public Post detail(String url) throws IOException {
+        Document doc = Jsoup.connect(url).get();
+        Elements description = doc.select(".msgBody");
+        Elements date = doc.select(".msgFooter");
+        Elements title = doc.select(".messageHeader");
+        return Post.of(
+                0,
+                parseElement(title),
+                url,
+                description.get(1).text(),
+                parser.parse(parseElement(date))
+        );
+    }
+
+    private String parseElement(Elements rows) {
+        return rows.get(0).text().split(" \\[", 2)[0];
+    }
+
     public static void main(String[] args) throws IOException {
-        for (int i = 1; i <= 5; i++) {
-            Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers/" + i).get();
-            Elements row = doc.select(".postslisttopic");
-            for (Element td : row) {
-                Element parent = td.parent();
-                System.out.println(parent.child(1).text());
-                System.out.println(parent.child(1).getAllElements().attr("href"));
-                System.out.println(parent.child(5).text());
-            }
-        }
+        Post post = new SqlRuParse().detail("https://www.sql.ru/forum/1341097/web-programmist-uroven-middle");
+        System.out.println(post);
     }
 }
