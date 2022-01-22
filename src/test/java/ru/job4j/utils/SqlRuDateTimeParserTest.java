@@ -12,8 +12,8 @@ import static org.junit.Assert.*;
 public class SqlRuDateTimeParserTest {
     @Test
     public void whenFullDateWithTime() {
-        String parse = "25 июн 18, 21:56";
-        LocalDateTime expected = LocalDateTime.of(2018, 6, 25, 21, 56);
+        String parse = "25 янв 18, 21:56";
+        LocalDateTime expected = LocalDateTime.of(2018, 1, 25, 21, 56);
         LocalDateTime result = new SqlRuDateTimeParser().parse(parse);
         assertThat(result, is(expected));
     }
